@@ -1,7 +1,7 @@
 // 0) Require le module dotenv
 require('dotenv').config();
 // 0)bis Require la connection
-// require('../models/connection');
+require('../models/connection');
 
 var express = require('express');
 var path = require('path');
