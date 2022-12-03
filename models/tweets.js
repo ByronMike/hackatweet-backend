@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-// Les clés étrangères doivent être utilisées pour associer les tweets (auteur & likes) aux users
 const tweetSchema = mongoose.Schema({
   author: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
   content: String,

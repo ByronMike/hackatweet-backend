@@ -1,9 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
-// 0) On créé une variable qui fait référence au modèle users
+require('../models/connection');
 const User = require('../models/users');
-// Voir en bas de page en commentaires *
 const { checkBody } = require('../modules/checkBody');
 // 0) On importe le module bcrypt pour hacher le mot de passe
 const bcrypt = require('bcrypt');
@@ -12,7 +11,6 @@ const uid2 = require('uid2');
 
 // 1) Route signup
 router.post('/signup', (req, res) => {
-// Commentaire : écriture compact de req.body.firstname..
   if (!checkBody(req.body, ['firstName', 'username', 'password'])) {
     res.json({ result: false, error: 'Missing or empty fields' });
     return;
@@ -23,16 +21,13 @@ router.post('/signup', (req, res) => {
   // Commentaire - new : Il s'agit d'une méthode "constructor" pour crééer et initialiser une classe 
   User.findOne({ username: { $regex: new RegExp(req.body.username, 'i') } }).then(data => {
     if (data === null) {
-      // 1.2) Nouveau user => hashage du mdp
       const hash = bcrypt.hashSync(req.body.password, 10);
 
-      // 1.3) Création du user
+      // 1.2) 
       const newUser = new User({
         firstName: req.body.firstName,
         username: req.body.username,
-       // Commentaire : mdp haché
         password: hash,
-       // Création du token avec la création du user
         token: uid2(32),
         canBookmark: true,
       });
@@ -47,7 +42,6 @@ router.post('/signup', (req, res) => {
   });
 });
 
-// 2) Route signin
 router.post('/signin', (req, res) => {
   if (!checkBody(req.body, ['username', 'password'])) {
     res.json({ result: false, error: 'Missing or empty fields' });
@@ -55,7 +49,6 @@ router.post('/signin', (req, res) => {
   }
 
   User.findOne({ username: { $regex: new RegExp(req.body.username, 'i') } }).then(data => {
-    // On compare le mdp entré (req.body.password) avec celui en enregistré en bdd (data.password) avec la méthode compareSync de bcrypt
     if (bcrypt.compareSync(req.body.password, data.password)) {
       res.json({ result: true, token: data.token, username: data.username, firstName: data.firstName });
     } else {
@@ -65,17 +58,3 @@ router.post('/signin', (req, res) => {
 });
 
 module.exports = router;
-
-//function checkBody(body, keys) {
-//   let isValid = true;
-
-//   for (const field of keys) {
-//     if (!body[field] || body[field] === '') {
-//       isValid = false;
-//     }
-//   }
-
-//   return isValid;
-// }
-
-// module.exports = { checkBody };
