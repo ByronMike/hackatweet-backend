@@ -1,3 +1,5 @@
+// Attention : il est parfois nécessaire de créer directement la BDD à partir de mangoose
+
 const mongoose = require('mongoose');
 
 const connectionString = process.env.CONNECTION_STRING;
